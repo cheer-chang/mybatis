@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--必写属性namespace，这个命名空间的值为接口的全限定类名，如果不写的话初始化的时候就会抛异常，配置文件也是通过命名空间来找接口中的方法-->
+<mapper namespace="com.example.mybatis.demo01.mapper.UserMapper">
+
+    <!--转载 http://www.vipfzh.cn/article/80.html-->
+
+    <!--
+        cache – 给定命名空间的缓存配置。
+        cache-ref – 其他命名空间缓存配置的引用。
+        resultMap – 是最复杂也是最强大的元素，用来描述如何从数据库结果集中来加载对象。
+        parameterMap – 已废弃！老式风格的参数映射。内联参数是首选,这个元素可能在将来被移除，这里不会记录。
+        sql – 可被其他语句引用的可重用语句块。
+        insert – 映射插入语句
+        update – 映射更新语句
+        delete – 映射删除语句
+        select – 映射查询语句
+    -->
+
+
+    <select id="getAll" resultType="UserEntity">
+        select * from  user_test
+    </select>
+
+    <!--resultMap：-->
+    <resultMap id="findByIdResultMap" type="UserEntity">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"/>
+    </resultMap>
+    <select id="findById" parameterType="UserEntity"
+            resultMap="findByIdResultMap">
+         select id,age,name,creator_id from  user_test where id=#{id}
+    </select>
+
+    <insert id="add" parameterType="UserEntity" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO `user_test`(`age`, `name`, `creator_id`) VALUES (#{age}, #{name},#{creatorId});
+    </insert>
+
+    <update id="update" parameterType="UserEntity" keyColumn="id" keyProperty="id">
+        UPDATE `user_test`
+        <set>
+            <if test="age!=null and age>0">`age` =#{age},</if>
+            <if test="name!=null">`name` =#{name},</if>
+            <if test="creatorId!=null">`creator_id` =#{creatorId}</if>
+        </set>
+        WHERE `id` = #{id};
+    </update>
+
+    <delete id="remove" parameterType="long">
+        delete from user_test where id=#{id}
+    </delete>
+</mapper>
